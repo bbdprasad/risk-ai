@@ -1,5 +1,3 @@
-# risk-ai
-
 # Risk AI - Trading Behavior Risk Analysis System
 
 A comprehensive machine learning system for detecting anomalous trading behavior and calculating risk scores for traders.
