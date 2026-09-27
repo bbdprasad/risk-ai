@@ -15,6 +15,9 @@ from typing import Dict, List, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
+from models.behavioral_drift import DriftSeverity
+from models.risk_escalation import RiskLevel
+
 
 class HealthStatus(Enum):
     """Health status categories."""
@@ -149,8 +152,6 @@ class TraderHealthScorer:
         
         # 1. Penalize for drift signals (40 points)
         if drift_signals:
-            from models.behavioral_drift import DriftSeverity
-            
             critical_count = sum(1 for s in drift_signals if s.severity == DriftSeverity.CRITICAL)
             warning_count = sum(1 for s in drift_signals if s.severity == DriftSeverity.WARNING)
             
@@ -212,8 +213,6 @@ class TraderHealthScorer:
         
         # 1. Penalize for risk escalation signals (50 points)
         if risk_signals:
-            from models.risk_escalation import RiskLevel
-            
             critical_count = sum(1 for s in risk_signals if s.risk_level == RiskLevel.CRITICAL)
             dangerous_count = sum(1 for s in risk_signals if s.risk_level == RiskLevel.DANGEROUS)
             
@@ -231,8 +230,10 @@ class TraderHealthScorer:
         
         # 3. Leverage control (25 points)
         if 'account_equity' in trader_trades.columns:
-            trader_trades['position_value'] = trader_trades['quantity'] * trader_trades.get('entry_price', trader_trades.get('price', 100))
-            trader_trades['leverage'] = trader_trades['position_value'] / trader_trades['account_equity']
+            price_col = trader_trades.get('entry_price', trader_trades.get('price', 100))
+            trader_trades['position_value'] = trader_trades['quantity'] * price_col
+            safe_equity = trader_trades['account_equity'].replace(0, np.nan)
+            trader_trades['leverage'] = trader_trades['position_value'] / safe_equity
             
             avg_leverage = trader_trades['leverage'].mean()
             

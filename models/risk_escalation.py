@@ -209,8 +209,10 @@ class RiskEscalationMonitor:
             return signals
         
         # Calculate effective leverage (position value / equity)
-        trader_trades['position_value'] = trader_trades['quantity'] * trader_trades.get('entry_price', trader_trades.get('price', 100))
-        trader_trades['leverage'] = trader_trades['position_value'] / trader_trades['account_equity']
+        price_col = trader_trades.get('entry_price', trader_trades.get('price', 100))
+        trader_trades['position_value'] = trader_trades['quantity'] * price_col
+        safe_equity = trader_trades['account_equity'].replace(0, np.nan)
+        trader_trades['leverage'] = trader_trades['position_value'] / safe_equity
         
         # Recent vs historical leverage
         recent_leverage = trader_trades.tail(10)['leverage'].mean()

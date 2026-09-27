@@ -16,6 +16,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 
+from scoring.trader_health import HealthStatus
+from models.behavioral_drift import DriftSeverity
+from models.risk_escalation import RiskLevel
+
 
 class AlertSeverity(Enum):
     """Alert severity levels."""
@@ -108,9 +112,7 @@ class AlertSystem:
             List of generated alerts
         """
         alerts = []
-        
-        from scoring.trader_health import HealthStatus
-        
+
         # Critical health status
         if health_report.status == HealthStatus.CRITICAL:
             alert = Alert(
@@ -168,9 +170,7 @@ class AlertSystem:
         
         if not drift_signals:
             return alerts
-        
-        from models.behavioral_drift import DriftSeverity
-        
+
         # Count signals by severity
         critical_signals = [s for s in drift_signals if s.severity == DriftSeverity.CRITICAL]
         warning_signals = [s for s in drift_signals if s.severity == DriftSeverity.WARNING]
@@ -256,9 +256,7 @@ class AlertSystem:
         
         if not risk_signals:
             return alerts
-        
-        from models.risk_escalation import RiskLevel
-        
+
         # Count signals by risk level
         critical_risks = [s for s in risk_signals if s.risk_level == RiskLevel.CRITICAL]
         dangerous_risks = [s for s in risk_signals if s.risk_level == RiskLevel.DANGEROUS]
