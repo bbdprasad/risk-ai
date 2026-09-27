@@ -3,6 +3,7 @@ Anomaly Detection Module for Risk AI
 Detects unusual trading patterns and behaviors using multiple techniques.
 """
 
+import logging
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple
@@ -10,6 +11,8 @@ from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.covariance import EllipticEnvelope
+
+logger = logging.getLogger(__name__)
 
 
 class AnomalyDetector:
@@ -104,13 +107,13 @@ class AnomalyDetector:
     
     def fit_all_models(self, X: np.ndarray) -> None:
         """Fit all anomaly detection models."""
-        print("Fitting Isolation Forest...")
+        logger.info("Fitting Isolation Forest...")
         self.fit_isolation_forest(X)
-        
-        print("Fitting Elliptic Envelope...")
+
+        logger.info("Fitting Elliptic Envelope...")
         self.fit_elliptic_envelope(X)
-        
-        print("All models fitted successfully.")
+
+        logger.info("All models fitted successfully.")
     
     def predict(self, X: np.ndarray, method: str = 'ensemble') -> np.ndarray:
         """
@@ -214,7 +217,7 @@ class AnomalyDetector:
         # Get anomaly scores
         try:
             scores = self.get_anomaly_scores(X, method='isolation_forest')
-        except:
+        except Exception:
             scores = np.zeros(len(predictions))
         
         # Add results to dataframe

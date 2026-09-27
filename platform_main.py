@@ -8,6 +8,7 @@ This is the new integrated system based on the platform vision.
 import sys
 import os
 import argparse
+import logging
 from pathlib import Path
 from datetime import datetime
 
@@ -23,6 +24,13 @@ from simulation.behavioral_simulator import BehavioralTraderSimulator
 
 import pandas as pd
 import numpy as np
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(name)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 
 class TradingRiskPlatform:
@@ -137,7 +145,7 @@ class TradingRiskPlatform:
                 self.results[trader_id] = result
                 
             except Exception as e:
-                print(f"\n⚠ Error analyzing {trader_id}: {e}")
+                logger.warning("Error analyzing trader %s: %s", trader_id, e)
                 continue
         
         print()  # New line after progress
